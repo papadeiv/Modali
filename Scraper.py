@@ -26,8 +26,6 @@ class Reddit():
                   # password = '', as per above
                   user_agent = 'reddit-UniSTEM-scraper')
 
-    self.dictionary = {"text":[], "sentiment":[]}
-
     self.cardinality = 0
 
   def scrape(self):
@@ -44,11 +42,11 @@ class Reddit():
         sub_idx = 0
         for submission in threads:
           if not submission.stickied:
+            submission.comments.replace_more(limit=0)
             sub_idx += 1
             print('Subreddit: r/{}\n> Thread n.{} ({}): {}'.format(subreddit[0], sub_idx, submission.link_flair_text, submission.title))
             print(50*'-')
 
-            submission.comments.replace_more(limit=0)
             for comment in submission.comments.list():
               print('  Parent ID = {}\n  Comment ID = {}\n  "{}"\n'.format(comment.parent(), comment.id, comment.body))
               entry_list = [str(comment.body), 0]
@@ -76,8 +74,6 @@ class Facebook():
 
     self.source = [[None, '1650533981900983', 'IngegeriadelSuicidio'],
                    ['liberonews', None, 'Libero']]
-
-    self.dictionary = {"text":[], "sentiment":[]}
     
     self.cardinality = 0
 
