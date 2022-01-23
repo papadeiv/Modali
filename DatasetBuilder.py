@@ -1,5 +1,6 @@
 import random
-import csv
+import json
+import os
 from Scraper import Reddit, Facebook
 
 class DatasetBuilder:
@@ -7,31 +8,38 @@ class DatasetBuilder:
 	def __init__(self):
 		self.reddit_scraper = Reddit()
 		self.facebook_scraper = Facebook()
+		if not os.path.exists("ITA-Dataset.json"):
+			self.dataset = []
 
 	def build(self):
-		# self.reddit_scraper.scrape()
+		self.reddit_scraper.scrape()
 		self.facebook_scraper.scrape()
 
-	def shuffle():
-		# Generate randomly sampled index arrays for the two .csv datasets
-		shuffled_reddit_idx = random.sample(range(1, self.reddit_scraper.cardinality), self.reddit_scraper.cardinality)
-		shuffled_facebook_idx = random.sample(range(1, self.facebook_scraper.cardinality), self.facebook_scraper.cardinality)
+	def shuffle(self):
+		# Generate randomly sampled index arrays
+		shuffled_reddit_idx = random.sample(range(0, self.reddit_scraper.cardinality), self.reddit_scraper.cardinality)
+		shuffled_facebook_idx = random.sample(range(0, self.facebook_scraper.cardinality), self.facebook_scraper.cardinality)
 
-		# Generate json with random samples
+		# Generate json with random samples		
 		reddit_counter = 0
 		facebook_counter = 0
+
 		for idx in range(1, self.reddit_scraper.cardinality + self.facebook_scraper.cardinality):
 			if random.random() > 0.5:
 				if reddit_counter < self.reddit_scraper.cardinality:
-					# Append row from reddit.csv
+					self.dataset.append({"text": self.reddit_scraper.dictionary[shuffled_reddit_idx[reddit_counter]]["text"],
+										 "sentiment": self.reddit_scraper.dictionary[shuffled_reddit_idx[reddit_counter]]["sentiment"]})
 					reddit_counter += 1
 			else:
 				if facebook_counter < self.facebook_scraper.cardinality:
-					# Append row from facebook.csv
+					self.dataset.append({"text": self.facebook_scraper.dictionary[shuffled_facebook_idx[facebook_counter]]["text"],
+										 "sentiment": self.facebook_scraper.dictionary[shuffled_facebook_idx[facebook_counter]]["sentiment"]})
 					facebook_counter += 1
 
 				else:
-					# Append row from reddit.csv
+					self.dataset.append({"text": self.reddit_scraper.dictionary[shuffled_reddit_idx[reddit_counter]]["text"],
+										 "sentiment": self.reddit_scraper.dictionary[shuffled_reddit_idx[reddit_counter]]["sentiment"]})
 					reddit_counter += 1
 
-		# Delete the csv files
+		with open('ITA-Dataset.json', 'w+') as dataset:
+			json.dump(self.dataset, dataset, indent=2, ensure_ascii=False)

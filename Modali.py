@@ -11,6 +11,6 @@ else:
 	print("Building the italian toxicity Dataset!")
 	builder = DatasetBuilder()
 	builder.build()
-	# builder.shuffle()
+	builder.shuffle()
 	print("Dataset has been build!")
 
